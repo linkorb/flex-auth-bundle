@@ -39,9 +39,6 @@ class FlexUserUserProviderFactory implements UserProviderFactoryInterface
 
     public function addConfiguration(NodeDefinition $node)
     {
-        $node
-            // ->children()
-            ->end()
-        ;
+        $node->end();
     }
 }

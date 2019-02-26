@@ -2,10 +2,16 @@
 
 namespace FlexAuthBundle;
 
+use FlexAuthBundle\DependencyInjection\FlexAuthExtension;
+use FlexAuthBundle\Security\FlexUserUserProviderFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * Class FlexAuthBundle
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class FlexAuthBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
@@ -15,7 +21,7 @@ class FlexAuthBundle extends Bundle
         /** @var SecurityExtension $securityExtension */
         $securityExtension = $container->getExtension('security');
         $securityExtension->addUserProviderFactory(
-            new FlexUserUserProviderFactory('flex_auth', 'flex_auth.security.user.provider')
+            new FlexUserUserProviderFactory('flex_auth', FlexAuthExtension::USER_PROVIDER_SERVICE_ID)
         );
     }
 }

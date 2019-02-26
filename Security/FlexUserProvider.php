@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexAuthBundle;
+namespace FlexAuthBundle\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -12,22 +12,27 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class FlexUserProvider implements UserProviderInterface
 {
     /**
-     * @var UserProviderInterface
+     * @var UserProviderFactory
      */
-    protected $provider;
+    protected $userProviderFactory;
+
+    public function __construct(UserProviderFactory $userProviderFactory)
+    {
+        $this->userProviderFactory = $userProviderFactory;
+    }
 
     public function loadUserByUsername($username)
     {
-        // TODO: Implement loadUserByUsername() method.
+        $this->userProviderFactory->create()->loadUserByUsername($username);
     }
 
     public function refreshUser(UserInterface $user)
     {
-        // TODO: Implement refreshUser() method.
+        $this->userProviderFactory->create()->refreshUser($user);
     }
 
     public function supportsClass($class)
     {
-        // TODO: Implement supportsClass() method.
+        $this->userProviderFactory->create()->supportsClass($class);
     }
 }

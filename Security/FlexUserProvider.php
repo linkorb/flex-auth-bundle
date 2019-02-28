@@ -23,16 +23,16 @@ class FlexUserProvider implements UserProviderInterface
 
     public function loadUserByUsername($username)
     {
-        $this->userProviderFactory->create()->loadUserByUsername($username);
+        return $this->userProviderFactory->create()->loadUserByUsername($username);
     }
 
     public function refreshUser(UserInterface $user)
     {
-        $this->userProviderFactory->create()->refreshUser($user);
+        return $this->userProviderFactory->create()->refreshUser($user);
     }
 
     public function supportsClass($class)
     {
-        $this->userProviderFactory->create()->supportsClass($class);
+        return $this->userProviderFactory->create()->supportsClass($class);
     }
 }

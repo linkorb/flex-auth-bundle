@@ -18,8 +18,14 @@ class MemoryUserProviderFactory implements UserProviderFactoryInterface
 
     private function convertParamsStringToUsers($paramsString)
     {
-        $users = [];
+        $users = [
+            'alice' => [
+                'password' => '123',
+                'roles' => ['ROLE_USER']
+            ]
+        ];
 
+        //var_dump($users);die();
         // TODO
         // throw new InvalidParamsException("Unsupported format");
 

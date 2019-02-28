@@ -2,10 +2,12 @@
 
 namespace FlexAuthBundle\Security;
 
+use FlexAuthBundle\DependencyInjection\FlexAuthExtension;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * Class FlexUserUserProviderFactory
@@ -13,23 +15,27 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class FlexUserUserProviderFactory implements UserProviderFactoryInterface
 {
-    private $key;
-    private $providerId;
+    public const DEFAULT_FLEX_AUTH_ENV_VAR = 'FLEX_AUTH';
 
-    public function __construct(string $key, string $providerId)
+    private $key;
+
+    public function __construct(string $key)
     {
         $this->key = $key;
-        $this->providerId = $providerId;
     }
 
     public function create(ContainerBuilder $container, $id, $config)
     {
-        $container
-            ->setDefinition($id, new ChildDefinition($this->providerId))
-            ->addArgument($config['class'])
-            ->addArgument($config['property'])
-            ->addArgument($config['manager_name'])
-        ;
+        $container->setDefinition($id, new ChildDefinition(FlexAuthExtension::USER_PROVIDER_SERVICE_ID));
+
+        if (!array_key_exists('env_var', $config)) {
+            throw new \InvalidArgumentException("'env_var' does not exist in config");
+        }
+
+        $definition = new Definition(AuthFlexTypeProviderInterface::class);
+        $definition->setFactory([AuthFlexTypeProviderFactory::class, 'fromEnv']);
+        $definition->addArgument($config['env_var']);
+        $container->setDefinition(AuthFlexTypeProviderInterface::class, $definition);
     }
 
     public function getKey()
@@ -39,6 +45,9 @@ class FlexUserUserProviderFactory implements UserProviderFactoryInterface
 
     public function addConfiguration(NodeDefinition $node)
     {
-        $node->end();
+        $node
+            ->children()
+            ->scalarNode('env_var')->defaultValue(self::DEFAULT_FLEX_AUTH_ENV_VAR)->end()
+            ->end();
     }
 }

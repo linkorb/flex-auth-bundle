@@ -20,11 +20,11 @@ class RegisterAuthFlexTypePass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         foreach($container->findTaggedServiceIds(self::AUTH_FLEX_TYPE_TEG) as $serviceId => $tags) {
-            if (!$tags['type']) {
+            if (!array_key_exists(0, $tags) || !array_key_exists('type', $tags[0]) || !$tags[0]['type']) {
                 throw new InvalidArgumentException(sprintf('No specify type for %s tag', self::AUTH_FLEX_TYPE_TEG));
             }
             $container->getDefinition(FlexAuthExtension::USER_PROVIDER_FACTORY_SERVICE_ID)
-                ->addMethodCall('addType', [$tags['type'], new Reference($serviceId)]);
+                ->addMethodCall('addType', [$tags[0]['type'], new Reference($serviceId)]);
         }
     }
 }

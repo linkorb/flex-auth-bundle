@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * Class UserProviderFactory
+ *
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class UserProviderFactory
@@ -15,7 +16,14 @@ class UserProviderFactory
     /**
      * @var UserProviderFactoryInterface[]
      */
-    protected $factories;
+    protected $factories = [];
+
+    protected $authFlexTypeProvider;
+
+    public function __construct(AuthFlexTypeProviderInterface $authFlexTypeProvider)
+    {
+        $this->authFlexTypeProvider = $authFlexTypeProvider;
+    }
 
     public function addType($typeKey, UserProviderFactoryInterface $userFactory)
     {
@@ -50,14 +58,15 @@ class UserProviderFactory
      */
     private function resolveTypeAndParams()
     {
-        // TODO env variable
-        $flexAuth = 'memory?users=alice:4l1c3:ROLE_ADMIN;ROLE_EXAMPLE,bob:b0b:ROLE_EXAMPLE)';
+        $flexAuth = $this->authFlexTypeProvider->provide();
 
         $parts = [];
-        preg_match('/(' . join('|', self::getTypes()) . ')\?(.+)/i', $flexAuth, $parts);
+        $allowTypes = array_keys($this->factories);
+
+        preg_match('/(' . join('|', $allowTypes) . ')\?(.+)/i', $flexAuth, $parts);
         if (count($parts) !== 3) {
             throw new InvalidParamsException(
-                sprintf('Unsupported flex auth environment format. Allow: %s', join(', ', array_keys($this->factories)))
+                sprintf('Unsupported flex auth environment format. Allow: %s', join(', ', $allowTypes))
             );
         }
 

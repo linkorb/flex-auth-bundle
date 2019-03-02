@@ -42,12 +42,14 @@ class UserProviderFactory
     {
         $result = $this->resolveTypeAndParams();
         $type = $result[0];
-        $paramsString = $result[1];
+        $params = $result[1];
 
         if (!array_key_exists($type, $this->factories)) {
             throw new \InvalidArgumentException(sprintf('Auth type "%s" is not supported', $type));
         }
-        return $this->factories[$type]->create($paramsString);
+        $factory = $this->factories[$type];
+
+        return $factory->create($params);
     }
 
 
@@ -58,21 +60,24 @@ class UserProviderFactory
      */
     private function resolveTypeAndParams()
     {
-        $flexAuth = $this->authFlexTypeProvider->provide();
+        $flexAuthData = $this->authFlexTypeProvider->provide();
 
-        $parts = [];
         $allowTypes = array_keys($this->factories);
 
-        preg_match('/(' . join('|', $allowTypes) . ')\?(.+)/i', $flexAuth, $parts);
-        if (count($parts) !== 3) {
+        if (is_null($flexAuthData['type'])) {
+            throw new \InvalidArgumentException();
+        }
+
+        $type = $flexAuthData['type'];
+
+        if (!in_array($type, $allowTypes)) {
             throw new InvalidParamsException(
                 sprintf('Unsupported flex auth environment format. Allow: %s', join(', ', $allowTypes))
             );
         }
 
-        $type = $parts[1];
-        // TODO
-        $params = $parts[2];
+        $params = $flexAuthData;
+        unset($params['type']);
 
         return [$type, $params];
     }

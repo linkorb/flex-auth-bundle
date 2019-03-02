@@ -3,7 +3,6 @@
 namespace FlexAuthBundle\Security\Type\Memory;
 
 
-use FlexAuthBundle\Security\Type\InvalidParamsException;
 use FlexAuthBundle\Security\Type\UserProviderFactoryInterface;
 use Symfony\Component\Security\Core\User\InMemoryUserProvider;
 
@@ -11,23 +10,31 @@ class MemoryUserProviderFactory implements UserProviderFactoryInterface
 {
     const TYPE = 'memory';
 
-    public function create($paramsString)
+    public function create($params)
     {
-        return new InMemoryUserProvider($this->convertParamsStringToUsers($paramsString));
+        if (!array_key_exists('users', $params)) {
+            throw new \InvalidArgumentException();
+        }
+
+        $users = $this->convertUserString($params['users']);
+        return new InMemoryUserProvider($users);
     }
 
-    private function convertParamsStringToUsers($paramsString)
+    private function convertUserString($usersString)
     {
-        $users = [
-            'alice' => [
-                'password' => '123',
-                'roles' => ['ROLE_USER']
-            ]
-        ];
+        $users = [];
+        foreach (explode(",", $usersString) as $user) {
+            $properties = explode(":", $user);
+            $users[$properties[0]] = [
+                'password' => $properties[1],
+                'roles' => explode(";", $properties[2]),
+            ];
+        }
 
-        //var_dump($users);die();
-        // TODO
-        // throw new InvalidParamsException("Unsupported format");
+        /*echo '<pre>';
+        var_dump($users);
+        echo '</pre>';
+        die();*/
 
         return $users;
     }

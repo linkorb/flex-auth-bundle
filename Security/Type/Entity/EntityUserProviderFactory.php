@@ -2,27 +2,27 @@
 
 namespace FlexAuthBundle\Security\Type\Entity;
 
-
+use Doctrine\Common\Persistence\ManagerRegistry;
 use FlexAuthBundle\Security\Type\UserProviderFactoryInterface;
 use Symfony\Bridge\Doctrine\Security\User\EntityUserProvider;
 
+/**
+ * Class EntityUserProviderFactory
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class EntityUserProviderFactory implements UserProviderFactoryInterface
 {
     const TYPE = 'entity';
 
-    public function create($paramsString)
+    private $managerRegistry;
+
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        $param = $this->convertParamsStringToUsers($paramsString);
-        return new EntityUserProvider($param['manager_registry'], $param['classOrAlias'], $param['property'], $param['managerName']);
+        $this->managerRegistry = $managerRegistry;
     }
 
-    private function convertParamsStringToUsers($paramsString)
+    public function create($params)
     {
-        $param = [];
-
-        // TODO
-        // throw new InvalidParamsException("Unsupported format");
-
-        return $param;
+        return new EntityUserProvider($this->managerRegistry, $params['class'], $params['property']);
     }
 }

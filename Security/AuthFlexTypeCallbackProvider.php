@@ -16,7 +16,7 @@ class AuthFlexTypeCallbackProvider implements AuthFlexTypeProviderInterface
         $this->callback = $callback;
     }
 
-    public function provide(): string
+    public function provide(): array
     {
         return call_user_func($this->callback);
     }

@@ -10,9 +10,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 interface UserProviderFactoryInterface
 {
     /**
-     * @param string $paramsString
+     * @param mixed $params
      * @return UserProviderInterface
      * @throws InvalidParamsException
      */
-    public function create($paramsString);
+    public function create($params);
 }

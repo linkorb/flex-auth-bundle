@@ -25,5 +25,8 @@
     "symfony/doctrine-bridge": "^3.4|^4.0"
   },
   "require-dev": {
+  },
+  "suggest": {
+    "userbase/client": "Add support userbase/client"
   }
 }

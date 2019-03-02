@@ -12,13 +12,7 @@ class AuthFlexTypeProviderFactory
     public static function fromEnv(string $envVar)
     {
         return new AuthFlexTypeCallbackProvider(function () use($envVar) {
-            //$type = $_ENV[$envVar];
-
-            // if provideString return only type without params after "?" symbol, that method should be called
-            $type = "entity?class=\App\Entity\User&property=username";
-            //$type = "memory?users=alice:4l1c3:ROLE_ADMIN;ROLE_EXAMPLE,bob:b0b:ROLE_EXAMPLE";
-
-
+            $type = $_ENV[$envVar];
             preg_match('/([A-Z0-9_]+)\?(.+)/i', $type , $parts);
 
             $params = [];

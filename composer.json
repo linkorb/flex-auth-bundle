@@ -22,7 +22,8 @@
     "symfony/http-kernel": "^3.4|^4.0",
     "symfony/routing": "^3.4|^4.0",
     "symfony/security-bundle": "^3.4|^4.0",
-    "symfony/doctrine-bridge": "^3.4|^4.0"
+    "symfony/doctrine-bridge": "^3.4|^4.0",
+    "firebase/php-jwt": "^5.0"
   },
   "require-dev": {
   },

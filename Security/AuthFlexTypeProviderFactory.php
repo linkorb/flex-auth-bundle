@@ -18,9 +18,11 @@ class AuthFlexTypeProviderFactory
     public static function resolveParamsFromEnv($envVar)
     {
         if (!array_key_exists($envVar, $_ENV)) {
-            throw new \Exception(sprintf('Env variable "%s" is not found', $envVar));
+            //throw new \Exception(sprintf('Env variable "%s" is not found', $envVar));
         }
-        $type = $_ENV[$envVar];
+        //$type = $_ENV[$envVar];
+        $type = 'jwt?';
+
 
         try {
             $params = self::resolveParamsFromLine($type);

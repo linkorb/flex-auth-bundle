@@ -2,10 +2,10 @@
 
 namespace FlexAuthBundle\Security\Type\JWT;
 
+use FlexAuthBundle\Security\AuthFlexTypeProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -20,22 +20,23 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
     const TOKEN_HEADER = 'Authorization';
     const TOKEN_PREFIX = 'Bearer ';
 
-    private $passwordEncoder;
+
+    /** @var JWTUserFactoryInterface */
     private $JWTUserFactory;
-
-
     /** @var JWTEncoderInterface */
     private $JWTEncoder;
+    /** @var AuthFlexTypeProviderInterface */
+    private $authFlexTypeProvider;
 
     public function __construct(
-        UserPasswordEncoderInterface $passwordEncoder,
         JWTUserFactoryInterface $JWTUserFactory,
-        JWTEncoderInterface $JWTEncoder
+        JWTEncoderInterface $JWTEncoder,
+        AuthFlexTypeProviderInterface $authFlexTypeProvider
     )
     {
-        $this->passwordEncoder = $passwordEncoder;
         $this->JWTUserFactory = $JWTUserFactory;
         $this->JWTEncoder = $JWTEncoder;
+        $this->authFlexTypeProvider = $authFlexTypeProvider;
     }
 
     public function supports(Request $request)
@@ -43,7 +44,6 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
         if ($this->JWTEncoder instanceof EnableJWTEncoderInterface && !$this->JWTEncoder->isEnabled()) {
             return false;
         }
-
 
         $hasHeader = $request->headers->has(self::TOKEN_HEADER) &&
             strpos($request->headers->get(self::TOKEN_HEADER), self::TOKEN_PREFIX) === 0;
@@ -65,12 +65,13 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
 
     public function createTokenFromUser(UserInterface $user): string
     {
-        $FLEX_AUTH_USER_FIELD = 'username';
-        $FLEX_AUTH_ROLE_FIELD = 'permissions';
+        $params = $this->authFlexTypeProvider->provide();
+        $userField = $params['user_field'] || 'username';
+        $roleField = $params['role_field'] || 'permissions';
 
         $user = [
-            $FLEX_AUTH_USER_FIELD => $user->getUsername(),
-            $FLEX_AUTH_ROLE_FIELD => implode(",", $user->getRoles())
+            $userField => $user->getUsername(),
+            $roleField => implode(",", $user->getRoles())
         ];
 
         $encodedPayload = $this->JWTEncoder->encode($user);
@@ -86,15 +87,16 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
             );
         }
 
-        $FLEX_AUTH_USER_FIELD = 'username';
-        $FLEX_AUTH_ROLE_FIELD = 'permissions';
+        $params = $this->authFlexTypeProvider->provide();
+        $userField = $params['user_field'] || 'username';
+        $roleField = $params['role_field'] || 'permissions';
 
         $encodedPayload = $credentialsToken;
         $decodedPayload = $this->JWTEncoder->decode($encodedPayload);
 
         $user = $this->JWTUserFactory->createFromPayload([
-           'username' => $decodedPayload->{$FLEX_AUTH_USER_FIELD},
-           'roles' => explode(",", $decodedPayload->{$FLEX_AUTH_ROLE_FIELD})
+            $userField => $decodedPayload->{$FLEX_AUTH_USER_FIELD},
+            $roleField => explode(",", $decodedPayload->{$FLEX_AUTH_ROLE_FIELD})
         ]);
 
         return $user;

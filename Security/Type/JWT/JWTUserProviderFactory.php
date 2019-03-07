@@ -14,6 +14,6 @@ class JWTUserProviderFactory implements UserProviderFactoryInterface
 
     public function create($params)
     {
-        return new NullUserProvider();
+        return null;
     }
 }

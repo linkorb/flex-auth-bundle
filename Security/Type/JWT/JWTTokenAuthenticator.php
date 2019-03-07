@@ -3,6 +3,7 @@
 namespace FlexAuthBundle\Security\Type\JWT;
 
 use Firebase\JWT\JWT;
+use FlexAuthBundle\Security\AuthFlexTypeProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -24,52 +25,31 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
     private $passwordEncoder;
     private $JWTUserFactory;
 
-    // TODO move to params
-    private $key = <<<EOD
------BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQC8kGa1pSjbSYZVebtTRBLxBz5H4i2p/llLCrEeQhta5kaQu/Rn
-vuER4W8oDH3+3iuIYW4VQAzyqFpwuzjkDI+17t5t0tyazyZ8JXw+KgXTxldMPEL9
-5+qVhgXvwtihXC1c5oGbRlEDvDF6Sa53rcFVsYJ4ehde/zUxo6UvS7UrBQIDAQAB
-AoGAb/MXV46XxCFRxNuB8LyAtmLDgi/xRnTAlMHjSACddwkyKem8//8eZtw9fzxz
-bWZ/1/doQOuHBGYZU8aDzzj59FZ78dyzNFoF91hbvZKkg+6wGyd/LrGVEB+Xre0J
-Nil0GReM2AHDNZUYRv+HYJPIOrB0CRczLQsgFJ8K6aAD6F0CQQDzbpjYdx10qgK1
-cP59UHiHjPZYC0loEsk7s+hUmT3QHerAQJMZWC11Qrn2N+ybwwNblDKv+s5qgMQ5
-5tNoQ9IfAkEAxkyffU6ythpg/H0Ixe1I2rd0GbF05biIzO/i77Det3n4YsJVlDck
-ZkcvY3SK2iRIL4c9yY6hlIhs+K9wXTtGWwJBAO9Dskl48mO7woPR9uD22jDpNSwe
-k90OMepTjzSvlhjbfuPN1IdhqvSJTDychRwn1kIJ7LQZgQ8fVz9OCFZ/6qMCQGOb
-qaGwHmUK6xzpUbbacnYrIM6nLSkXgOAwv7XXCojvY614ILTK3iXiLBOxPu5Eu13k
-eUz9sHyD6vkgZzjtxXECQAkp4Xerf5TGfQXGXhxIX52yH+N2LtujCdkQZjXAsGdm
-B2zNzvrlgRmgBrklMTrMYgm1NPcW+bRLGcwgW2PTvNM=
------END RSA PRIVATE KEY-----
-EOD;
-
-    private $publicKey = <<<EOD
------BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8kGa1pSjbSYZVebtTRBLxBz5H
-4i2p/llLCrEeQhta5kaQu/RnvuER4W8oDH3+3iuIYW4VQAzyqFpwuzjkDI+17t5t
-0tyazyZ8JXw+KgXTxldMPEL95+qVhgXvwtihXC1c5oGbRlEDvDF6Sa53rcFVsYJ4
-ehde/zUxo6UvS7UrBQIDAQAB
------END PUBLIC KEY-----
-EOD;
-
-    private $algo  = 'RS256';
+    /** @var AuthFlexTypeProviderInterface */
+    private $authFlexTypeProvider;
 
     public function __construct(
         UserPasswordEncoderInterface $passwordEncoder,
-        JWTUserFactoryInterface $JWTUserFactory
+        JWTUserFactoryInterface $JWTUserFactory,
+        AuthFlexTypeProviderInterface $authFlexTypeProvider
     )
     {
         $this->passwordEncoder = $passwordEncoder;
         $this->JWTUserFactory = $JWTUserFactory;
+        $this->authFlexTypeProvider = $authFlexTypeProvider;
     }
 
     public function supports(Request $request)
     {
+        $params = $this->authFlexTypeProvider->provide();
+
+        $jwtEnable = $params['type'] === JWTUserProviderFactory::TYPE;
+
         $hasHeader = $request->headers->has(self::TOKEN_HEADER) &&
             strpos($request->headers->get(self::TOKEN_HEADER), self::TOKEN_PREFIX) === 0;
 
         $hasQuery = $request->query->has('jwt');
-        return $hasHeader || $hasQuery;
+        return $jwtEnable && ($hasHeader || $hasQuery);
     }
 
     public function getCredentials(Request $request)
@@ -93,7 +73,7 @@ EOD;
             $FLEX_AUTH_ROLE_FIELD => implode(",", $user->getRoles())
         ];
 
-        $encodedPayload = JWT::encode($user, $this->key, $this->algo);
+        $encodedPayload = JWT::encode($user, $this->getPrivateKey(), $this->getAlgorithm());
 
         return $encodedPayload;
     }
@@ -110,7 +90,7 @@ EOD;
         $FLEX_AUTH_ROLE_FIELD = 'permissions';
 
         $encodedPayload = $credentialsToken;
-        $decodedPayload = JWT::decode($encodedPayload, $this->publicKey, [$this->algo]);
+        $decodedPayload = JWT::decode($encodedPayload, $this->getPublicKey(), [$this->getAlgorithm()]);
 
         $user = $this->JWTUserFactory->createFromPayload([
            'username' => $decodedPayload->{$FLEX_AUTH_USER_FIELD},
@@ -143,6 +123,28 @@ EOD;
     public function supportsRememberMe()
     {
         return false;
+    }
+
+
+    private function getAlgorithm()
+    {
+        $params = $this->authFlexTypeProvider->provide();
+
+        return array_key_exists('algo', $params) ? $params['algo'] : 'RS256';
+    }
+
+    private function getPrivateKey()
+    {
+        $params = $this->authFlexTypeProvider->provide();
+
+        return $params['private_key'];
+    }
+
+    private function getPublicKey()
+    {
+        $params = $this->authFlexTypeProvider->provide();
+
+        return $params['public_key'];
     }
 
 }

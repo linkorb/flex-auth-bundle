@@ -18,11 +18,9 @@ class AuthFlexTypeProviderFactory
     public static function resolveParamsFromEnv($envVar)
     {
         if (!array_key_exists($envVar, $_ENV)) {
-            //throw new \Exception(sprintf('Env variable "%s" is not found', $envVar));
+            throw new \Exception(sprintf('Env variable "%s" is not found', $envVar));
         }
-        //$type = $_ENV[$envVar];
-        $type = 'jwt?';
-
+        $type = $_ENV[$envVar];
 
         try {
             $params = self::resolveParamsFromLine($type);
@@ -42,7 +40,8 @@ class AuthFlexTypeProviderFactory
 
     public static function resolveParamsFromLine($line) {
         $parts = [];
-        preg_match('/([A-Z0-9_]+)\?(.+)/i', $line , $parts);
+        preg_match('/([A-Z0-9_]+)\?((.|\n)+)/i', $line , $parts);
+
         if (!array_key_exists(2, $parts)) {
             throw new \InvalidArgumentException();
         }
@@ -55,7 +54,7 @@ class AuthFlexTypeProviderFactory
             }
         }
         $params['type'] = $parts[1];
-
+        
         return $params;
     }
 }

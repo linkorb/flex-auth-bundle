@@ -10,9 +10,11 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 interface UserProviderFactoryInterface
 {
     /**
+     * Returns null if flex auth type don't need to have own UserProvider as for JWT
+     *
      * @param mixed $params
-     * @return UserProviderInterface
+     * @return UserProviderInterface|null
      * @throws InvalidParamsException
      */
-    public function create($params);
+    public function create($params); // TODO type hint : ?UserProviderInterface;
 }

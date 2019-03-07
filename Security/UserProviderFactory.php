@@ -3,6 +3,7 @@
 namespace FlexAuthBundle\Security;
 
 use FlexAuthBundle\Security\Type\InvalidParamsException;
+use FlexAuthBundle\Security\Type\JWT\NullUserProvider;
 use FlexAuthBundle\Security\Type\UserProviderFactoryInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -49,7 +50,13 @@ class UserProviderFactory
         }
         $factory = $this->factories[$type];
 
-        return $factory->create($params);
+        $userProvider = $factory->create($params);
+
+        if ($userProvider === null) {
+            $userProvider = new NullUserProvider();
+        }
+
+        return $userProvider;
     }
 
 

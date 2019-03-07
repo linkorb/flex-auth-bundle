@@ -3,7 +3,6 @@
 namespace FlexAuthBundle;
 
 use FlexAuthBundle\DependencyInjection\CompilerPass\RegisterAuthFlexTypePass;
-use FlexAuthBundle\Security\FlexUserUserProviderFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -20,7 +19,7 @@ class FlexAuthBundle extends Bundle
 
         /** @var SecurityExtension $securityExtension */
         $securityExtension = $container->getExtension('security');
-        $securityExtension->addUserProviderFactory(new FlexUserUserProviderFactory('flex_auth'));
+        $securityExtension->addUserProviderFactory(new FlexUserProviderFactory('flex_auth'));
 
         $container->addCompilerPass(new RegisterAuthFlexTypePass());
     }

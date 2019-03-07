@@ -6,28 +6,21 @@
   "license": "MIT",
   "autoload":{
     "psr-4":{
-      "FlexAuthBundle\\": ""
+      "FlexAuthBundle\\": "src/"
     }
   },
   "require": {
-    "php": "^5.5.9|~7.0",
-    "psr/log": "^1.0",
-    "symfony/config": "^3.4|^4.0",
-    "symfony/debug": "^3.4|^4.0",
-    "symfony/dependency-injection": "^3.4|^4.0",
-    "symfony/event-dispatcher": "^3.4|^4.0",
-    "symfony/finder": "^3.4|^4.0",
-    "symfony/framework-bundle": "^3.4|^4.0",
-    "symfony/http-foundation": "^3.4|^4.0",
-    "symfony/http-kernel": "^3.4|^4.0",
-    "symfony/routing": "^3.4|^4.0",
-    "symfony/security-bundle": "^3.4|^4.0",
-    "symfony/doctrine-bridge": "^3.4|^4.0",
-    "firebase/php-jwt": "^5.0"
+    "php": "^7.0",
+    "symfony/config": "^4.0",
+    "symfony/dependency-injection": "^4.0",
+    "linkorb/flex-auth": "master@dev"
   },
   "require-dev": {
   },
-  "suggest": {
-    "userbase/client": "Add support userbase/client"
-  }
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/var/www/flex-auth"
+    }
+  ]
 }

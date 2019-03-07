@@ -47,7 +47,6 @@ class FlexAuthExtension extends Extension
 
         /* InMemory */
         $definition = new Definition(MemoryUserProviderFactory::class);
-        $definition->setAutowired(true);
         $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => MemoryUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.MemoryUserProviderFactory::TYPE, $definition);
 
@@ -61,14 +60,12 @@ class FlexAuthExtension extends Extension
         if (class_exists(\UserBase\Client\UserProvider::class)) {
             /* Userbase */
             $definition = new Definition(UserbaseClientUserProviderFactory::class);
-            $definition->setAutowired(true);
             $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => UserbaseClientUserProviderFactory::TYPE]);
             $container->setDefinition('flex_auth.type.'.UserbaseClientUserProviderFactory::TYPE, $definition);
         }
 
         /* JWT */
         $definition = new Definition(JWTUserProviderFactory::class);
-        $definition->setAutowired(true);
         $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => JWTUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.JWTUserProviderFactory::TYPE, $definition);
 

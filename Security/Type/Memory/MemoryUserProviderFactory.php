@@ -2,10 +2,13 @@
 
 namespace FlexAuthBundle\Security\Type\Memory;
 
-
 use FlexAuthBundle\Security\Type\UserProviderFactoryInterface;
 use Symfony\Component\Security\Core\User\InMemoryUserProvider;
 
+/**
+ * Class MemoryUserProviderFactory
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class MemoryUserProviderFactory implements UserProviderFactoryInterface
 {
     const TYPE = 'memory';
@@ -30,11 +33,6 @@ class MemoryUserProviderFactory implements UserProviderFactoryInterface
                 'roles' => explode(";", $properties[2]),
             ];
         }
-
-        /*echo '<pre>';
-        var_dump($users);
-        echo '</pre>';
-        die();*/
 
         return $users;
     }

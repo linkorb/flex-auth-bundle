@@ -3,7 +3,7 @@
 namespace FlexAuthBundle\Security;
 
 use FlexAuthBundle\Security\Type\InvalidParamsException;
-use FlexAuthBundle\Security\Type\JWT\NullUserProvider;
+use FlexAuthBundle\Security\Type\NullUserProvider;
 use FlexAuthBundle\Security\Type\UserProviderFactoryInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 

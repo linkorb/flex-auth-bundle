@@ -1,6 +1,6 @@
 <?php
 
-namespace FlexAuthBundle\Security\Type\JWT;
+namespace FlexAuthBundle\Security\Type;
 
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,7 +19,7 @@ class NullUserProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user)
     {
-
+        return $user;
     }
 
     public function supportsClass($class)

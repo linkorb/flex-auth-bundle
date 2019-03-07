@@ -5,6 +5,8 @@ namespace FlexAuthBundle\DependencyInjection;
 use FlexAuthBundle\DependencyInjection\CompilerPass\RegisterAuthFlexTypePass;
 use FlexAuthBundle\Security\FlexUserProvider;
 use FlexAuthBundle\Security\Type\Entity\EntityUserProviderFactory;
+use FlexAuthBundle\Security\Type\JWT\FlexTypeJWTEncoder;
+use FlexAuthBundle\Security\Type\JWT\JWTEncoderInterface;
 use FlexAuthBundle\Security\Type\JWT\JWTUserProviderFactory;
 use FlexAuthBundle\Security\Type\JWT\DefaultJWTUserFactory;
 use FlexAuthBundle\Security\Type\JWT\JWTTokenAuthenticator;
@@ -79,6 +81,14 @@ class FlexAuthExtension extends Extension
         $definition->addArgument(new Reference(self::USER_PROVIDER_FACTORY_SERVICE_ID));
         $container->setDefinition(self::USER_PROVIDER_SERVICE_ID, $definition);
 
+        $definition = new Definition(FlexTypeJWTEncoder::class);
+        $definition->setAutowired(true);
+        $container->setDefinition(FlexTypeJWTEncoder::class, $definition);
+
+        $definition = new Definition(FlexTypeJWTEncoder::class);
+        $definition->setAutowired(true);
+        $container->setDefinition(JWTEncoderInterface::class, $definition);
+
         /* JWT services */
         $definition = new Definition(JWTTokenAuthenticator::class);
         $definition->setAutowired(true);
@@ -87,9 +97,5 @@ class FlexAuthExtension extends Extension
         $definition = new Definition(DefaultJWTUserFactory::class);
         $definition->setAutowired(true);
         $container->setDefinition(JWTUserFactoryInterface::class, $definition);
-
-        $definition = new Definition(DefaultJWTUserFactory::class);
-        $definition->setAutowired(true);
-        $container->setDefinition(DefaultJWTUserFactory::class, $definition);
     }
 }

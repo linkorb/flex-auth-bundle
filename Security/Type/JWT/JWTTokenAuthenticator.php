@@ -66,8 +66,8 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
     public function createTokenFromUser(UserInterface $user): string
     {
         $params = $this->authFlexTypeProvider->provide();
-        $userField = $params['user_field'] || 'username';
-        $roleField = $params['role_field'] || 'permissions';
+        $userField = $params['user_field'] ?? 'username';
+        $roleField = $params['role_field'] ?? 'permissions';
 
         $user = [
             $userField => $user->getUsername(),
@@ -88,15 +88,15 @@ class JWTTokenAuthenticator extends AbstractGuardAuthenticator
         }
 
         $params = $this->authFlexTypeProvider->provide();
-        $userField = $params['user_field'] || 'username';
-        $roleField = $params['role_field'] || 'permissions';
+        $userField = $params['user_field'] ?? 'username';
+        $roleField = $params['role_field'] ?? 'permissions';
 
         $encodedPayload = $credentialsToken;
         $decodedPayload = $this->JWTEncoder->decode($encodedPayload);
 
         $user = $this->JWTUserFactory->createFromPayload([
-            $userField => $decodedPayload->{$FLEX_AUTH_USER_FIELD},
-            $roleField => explode(",", $decodedPayload->{$FLEX_AUTH_ROLE_FIELD})
+            'username' => $decodedPayload->{$userField},
+            'roles' => explode(",", $decodedPayload->{$roleField})
         ]);
 
         return $user;

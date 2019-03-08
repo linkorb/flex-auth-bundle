@@ -2,11 +2,6 @@
 
 namespace FlexAuthBundle;
 
-/**
- * Class FlexUserProviderFactory
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
- */
-
 use FlexAuthBundle\DependencyInjection\FlexAuthExtension;
 use FlexAuth\AuthFlexTypeProviderInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;

@@ -1,7 +1,7 @@
 {
   "name": "linkorb/flex-auth-bundle",
   "type": "symfony-bundle",
-  "description": "This Bundle provides flex auth for symfony in runtime",
+  "description": "This Bundle provides integration with flex auth for symfony",
   "keywords": ["auth"],
   "license": "MIT",
   "autoload":{
@@ -13,14 +13,6 @@
     "php": "^7.0",
     "symfony/config": "^4.0",
     "symfony/dependency-injection": "^4.0",
-    "linkorb/flex-auth": "master@dev"
-  },
-  "require-dev": {
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "/var/www/flex-auth"
-    }
-  ]
+    "linkorb/flex-auth": "^1.0.1"
+  }
 }

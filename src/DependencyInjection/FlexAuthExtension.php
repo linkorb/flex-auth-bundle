@@ -38,9 +38,6 @@ class FlexAuthExtension extends Extension
      */
     const USER_PROVIDER_SERVICE_ID = 'flex_auth.security.user.provider';
 
-    /**
-     * @TODO move service's definitions to services.yaml file?!
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         /* Flex auth type registration */
@@ -69,6 +66,7 @@ class FlexAuthExtension extends Extension
         $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => JWTUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.JWTUserProviderFactory::TYPE, $definition);
 
+
         /* Common services */
         $definition = new Definition(UserProviderFactory::class);
         $definition->setAutowired(true);
@@ -78,6 +76,8 @@ class FlexAuthExtension extends Extension
         $definition->addArgument(new Reference(self::USER_PROVIDER_FACTORY_SERVICE_ID));
         $container->setDefinition(self::USER_PROVIDER_SERVICE_ID, $definition);
 
+
+        /* JWT services */
         $definition = new Definition(FlexTypeJWTEncoder::class);
         $definition->setAutowired(true);
         $container->setDefinition(FlexTypeJWTEncoder::class, $definition);
@@ -86,7 +86,6 @@ class FlexAuthExtension extends Extension
         $definition->setAutowired(true);
         $container->setDefinition(JWTEncoderInterface::class, $definition);
 
-        /* JWT services */
         $definition = new Definition(JWTTokenAuthenticator::class);
         $definition->setAutowired(true);
         $container->setDefinition(JWTTokenAuthenticator::class, $definition);

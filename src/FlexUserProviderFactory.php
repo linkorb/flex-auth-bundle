@@ -9,6 +9,7 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 /**
  * Class FlexUserUserProviderFactory
@@ -34,6 +35,17 @@ class FlexUserProviderFactory implements UserProviderFactoryInterface
         $definition->setFactory([AuthFlexTypeProviderFactory::class, 'fromEnv']);
         $definition->addArgument($config['env_var']);
         $container->setDefinition(AuthFlexTypeProviderInterface::class, $definition);
+
+        if ($config['flex_password_encoder_enable']) {
+            if (!$container->hasAlias(EncoderFactoryInterface::class)) {
+                throw new \InvalidArgumentException(
+                    sprintf('Try replace general password encoder to flex encoder. "%s" service is not defined. Set "flex_encoder_enable" as false', EncoderFactoryInterface::class)
+                );
+            }
+
+            $container->removeAlias(EncoderFactoryInterface::class);
+            $container->setAlias(EncoderFactoryInterface::class, FlexAuthPasswordEncoder::class);
+        }
     }
 
     public function getKey()
@@ -46,6 +58,7 @@ class FlexUserProviderFactory implements UserProviderFactoryInterface
         $node
             ->children()
             ->scalarNode('env_var')->defaultValue(self::DEFAULT_FLEX_AUTH_ENV_VAR)->end()
+            ->booleanNode('flex_password_encoder_enable')->defaultValue(true)->end()
             ->end();
     }
 }

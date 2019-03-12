@@ -2,8 +2,10 @@
 
 namespace FlexAuthBundle\DependencyInjection;
 
+use FlexAuth\AuthFlexTypeProviderInterface;
 use FlexAuthBundle\DependencyInjection\CompilerPass\RegisterAuthFlexTypePass;
 use FlexAuth\Security\FlexUserProvider;
+use FlexAuth\Security\FlexAuthPasswordEncoder;
 use FlexAuth\Type\Entity\EntityUserProviderFactory;
 use FlexAuth\Type\JWT\FlexTypeJWTEncoder;
 use FlexAuth\Type\JWT\JWTEncoderInterface;
@@ -76,6 +78,9 @@ class FlexAuthExtension extends Extension
         $definition->addArgument(new Reference(self::USER_PROVIDER_FACTORY_SERVICE_ID));
         $container->setDefinition(self::USER_PROVIDER_SERVICE_ID, $definition);
 
+        $definition = new Definition(FlexAuthPasswordEncoder::class);
+        $definition->setArgument(0, AuthFlexTypeProviderInterface::class);
+        $container->setDefinition(FlexAuthPasswordEncoder::class, $definition);
 
         /* JWT services */
         $definition = new Definition(FlexTypeJWTEncoder::class);

@@ -46,7 +46,6 @@ class FlexUserProviderFactory implements UserProviderFactoryInterface
         $node
             ->children()
             ->scalarNode('env_var')->defaultValue(self::DEFAULT_FLEX_AUTH_ENV_VAR)->end()
-            ->booleanNode('flex_password_encoder_enable')->defaultValue(true)->end()
             ->end();
     }
 }

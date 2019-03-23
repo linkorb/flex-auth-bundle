@@ -79,7 +79,7 @@ class FlexAuthExtension extends Extension
         $container->setDefinition(self::USER_PROVIDER_SERVICE_ID, $definition);
 
         $definition = new Definition(FlexAuthPasswordEncoder::class);
-        $definition->setArgument(0, AuthFlexTypeProviderInterface::class);
+        $definition->setArgument(0, new Reference(AuthFlexTypeProviderInterface::class));
         $container->setDefinition(FlexAuthPasswordEncoder::class, $definition);
 
         /* JWT services */

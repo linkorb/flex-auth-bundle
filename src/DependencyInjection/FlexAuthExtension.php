@@ -2,8 +2,8 @@
 
 namespace FlexAuthBundle\DependencyInjection;
 
-use FlexAuth\AuthFlexTypeProviderInterface;
-use FlexAuthBundle\DependencyInjection\CompilerPass\RegisterAuthFlexTypePass;
+use FlexAuth\FlexAuthTypeProviderInterface;
+use FlexAuthBundle\DependencyInjection\CompilerPass\RegisterFlexAuthTypePass;
 use FlexAuth\Security\FlexUserProvider;
 use FlexAuth\Security\FlexAuthPasswordEncoder;
 use FlexAuth\Type\Entity\EntityUserProviderFactory;
@@ -46,26 +46,26 @@ class FlexAuthExtension extends Extension
 
         /* InMemory */
         $definition = new Definition(MemoryUserProviderFactory::class);
-        $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => MemoryUserProviderFactory::TYPE]);
+        $definition->addTag(RegisterFlexAuthTypePass::FLEX_AUTH_TYPE_TEG, ['type' => MemoryUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.MemoryUserProviderFactory::TYPE, $definition);
 
         /* Entity */
         $definition = new Definition(EntityUserProviderFactory::class);
         $definition->setAutowired(true);
-        $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => EntityUserProviderFactory::TYPE]);
+        $definition->addTag(RegisterFlexAuthTypePass::FLEX_AUTH_TYPE_TEG, ['type' => EntityUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.EntityUserProviderFactory::TYPE, $definition);
 
 
         if (class_exists(\UserBase\Client\UserProvider::class)) {
             /* Userbase */
             $definition = new Definition(UserbaseClientUserProviderFactory::class);
-            $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => UserbaseClientUserProviderFactory::TYPE]);
+            $definition->addTag(RegisterFlexAuthTypePass::FLEX_AUTH_TYPE_TEG, ['type' => UserbaseClientUserProviderFactory::TYPE]);
             $container->setDefinition('flex_auth.type.'.UserbaseClientUserProviderFactory::TYPE, $definition);
         }
 
         /* JWT */
         $definition = new Definition(JWTUserProviderFactory::class);
-        $definition->addTag(RegisterAuthFlexTypePass::AUTH_FLEX_TYPE_TEG, ['type' => JWTUserProviderFactory::TYPE]);
+        $definition->addTag(RegisterFlexAuthTypePass::FLEX_AUTH_TYPE_TEG, ['type' => JWTUserProviderFactory::TYPE]);
         $container->setDefinition('flex_auth.type.'.JWTUserProviderFactory::TYPE, $definition);
 
 
@@ -79,7 +79,7 @@ class FlexAuthExtension extends Extension
         $container->setDefinition(self::USER_PROVIDER_SERVICE_ID, $definition);
 
         $definition = new Definition(FlexAuthPasswordEncoder::class);
-        $definition->setArgument(0, new Reference(AuthFlexTypeProviderInterface::class));
+        $definition->setArgument(0, new Reference(FlexAuthTypeProviderInterface::class));
         $container->setDefinition(FlexAuthPasswordEncoder::class, $definition);
 
         /* JWT services */

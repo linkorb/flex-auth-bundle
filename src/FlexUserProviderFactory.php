@@ -3,7 +3,7 @@
 namespace FlexAuthBundle;
 
 use FlexAuthBundle\DependencyInjection\FlexAuthExtension;
-use FlexAuth\AuthFlexTypeProviderInterface;
+use FlexAuth\FlexAuthTypeProviderInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -17,6 +17,8 @@ use Symfony\Component\DependencyInjection\Definition;
 class FlexUserProviderFactory implements UserProviderFactoryInterface
 {
     public const DEFAULT_FLEX_AUTH_ENV_VAR = 'FLEX_AUTH';
+
+    /** @var string */
     private $key;
 
     public function __construct(string $key)
@@ -30,10 +32,10 @@ class FlexUserProviderFactory implements UserProviderFactoryInterface
         if (!array_key_exists('env_var', $config)) {
             throw new \InvalidArgumentException("'env_var' does not exist in config");
         }
-        $definition = new Definition(AuthFlexTypeProviderInterface::class);
-        $definition->setFactory([AuthFlexTypeProviderFactory::class, 'fromEnv']);
+        $definition = new Definition(FlexAuthTypeProviderInterface::class);
+        $definition->setFactory([FlexAuthTypeProviderFactory::class, 'fromEnv']);
         $definition->addArgument($config['env_var']);
-        $container->setDefinition(AuthFlexTypeProviderInterface::class, $definition);
+        $container->setDefinition(FlexAuthTypeProviderInterface::class, $definition);
     }
 
     public function getKey()

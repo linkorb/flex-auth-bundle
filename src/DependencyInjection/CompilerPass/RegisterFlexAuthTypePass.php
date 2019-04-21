@@ -10,18 +10,18 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class RegisterAuthFlexTypePass
+ * Class RegisterFlexAuthTypePass
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class RegisterAuthFlexTypePass implements CompilerPassInterface
+class RegisterFlexAuthTypePass implements CompilerPassInterface
 {
-    const AUTH_FLEX_TYPE_TEG = 'auth_flex_type';
+    const FLEX_AUTH_TYPE_TEG = 'flex_auth_type';
 
     public function process(ContainerBuilder $container)
     {
-        foreach($container->findTaggedServiceIds(self::AUTH_FLEX_TYPE_TEG) as $serviceId => $tags) {
+        foreach($container->findTaggedServiceIds(self::FLEX_AUTH_TYPE_TEG) as $serviceId => $tags) {
             if (!array_key_exists(0, $tags) || !array_key_exists('type', $tags[0]) || !$tags[0]['type']) {
-                throw new InvalidArgumentException(sprintf('No specify type for %s tag', self::AUTH_FLEX_TYPE_TEG));
+                throw new InvalidArgumentException(sprintf('No specify type for %s tag', self::FLEX_AUTH_TYPE_TEG));
             }
             $container->getDefinition(FlexAuthExtension::USER_PROVIDER_FACTORY_SERVICE_ID)
                 ->addMethodCall('addType', [$tags[0]['type'], new Reference($serviceId)]);

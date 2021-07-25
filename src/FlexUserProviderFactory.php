@@ -3,6 +3,7 @@
 namespace FlexAuthBundle;
 
 use FlexAuthBundle\DependencyInjection\FlexAuthExtension;
+use FlexAuth\FlexAuthTypeProviderFactory;
 use FlexAuth\FlexAuthTypeProviderInterface;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\UserProvider\UserProviderFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
